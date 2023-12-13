@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:client/models/ride.dart";
+import "package:client/screens/ride_detail.dart";
 
 class RidesScreen extends StatefulWidget {
   const RidesScreen({super.key});
@@ -9,8 +10,8 @@ class RidesScreen extends StatefulWidget {
 
 class _RidesScreenState extends State<RidesScreen> {
   List<Ride> ridesToShow = [];
-  TextEditingController sourceController = TextEditingController();
-  TextEditingController destinationController = TextEditingController();
+  final TextEditingController sourceController = TextEditingController();
+  final TextEditingController destinationController = TextEditingController();
   String sourceText = '';
   String destinationText = '';
 
@@ -22,10 +23,19 @@ class _RidesScreenState extends State<RidesScreen> {
 
   void filterRides() {
     setState(() {
-      ridesToShow = rides
-          .where((ride) =>
-              ride.source.toLowerCase().contains(sourceText.toLowerCase()))
-          .toList();
+      if (sourceText.isEmpty && destinationText.isEmpty) {
+        ridesToShow = rides; // No filter, show all rides
+      } else {
+        ridesToShow = rides
+            .where((ride) =>
+                ride.source
+                    .toLowerCase()
+                    .contains(sourceText.toLowerCase().trim()) &&
+                ride.destination
+                    .toLowerCase()
+                    .contains(destinationText.toLowerCase().trim()))
+            .toList();
+      }
     });
   }
 
@@ -34,7 +44,7 @@ class _RidesScreenState extends State<RidesScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Rides'),
+        title: const Text('Available Rides'),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {},
@@ -47,7 +57,7 @@ class _RidesScreenState extends State<RidesScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: rides.length,
+        itemCount: ridesToShow.length,
         itemBuilder: (context, index) {
           var ride = ridesToShow[index];
           return GestureDetector(
@@ -74,49 +84,65 @@ class _RidesScreenState extends State<RidesScreen> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 16, 12, 16),
+                padding: const EdgeInsets.fromLTRB(4, 16, 12, 16),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.person_2_rounded),
-                        Text(ride.driver.name)
-                      ],
+                    SizedBox(
+                      width: 80,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.person_2_rounded,
+                            size: 44,
+                          ),
+                          Text(ride.driver.name)
+                        ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${ride.source}  -  ${ride.destination}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text('${ride.departureTime} - ${ride.arrivalTime}'),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        Row(
-                          children: [
-                            const Icon(Icons.directions_car),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            Text(ride.vehicle.name)
-                          ],
-                        )
-                      ],
+                    const SizedBox(
+                      width: 8,
                     ),
-                    Text(
-                      '${ride.fare.toInt()} PKR',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Colors.red),
+                    Flexible(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${ride.source}  -  ${ride.destination}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text('${ride.departureTime} - ${ride.arrivalTime}'),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Row(
+                            children: [
+                              const Icon(Icons.directions_car),
+                              const SizedBox(
+                                width: 6,
+                              ),
+                              Text(ride.vehicle.name)
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      flex: 0,
+                      child: SizedBox(
+                        height: 75,
+                        child: Text(
+                          '${ride.fare.toInt()} PKR',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: Colors.red),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -138,16 +164,6 @@ class _RidesScreenState extends State<RidesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: destinationController,
-                onChanged: (value) {
-                  setState(() {
-                    destinationText = value;
-                  });
-                },
-                decoration:
-                    const InputDecoration(labelText: 'Enter Destination City'),
-              ),
-              TextField(
                 controller: sourceController,
                 onChanged: (value) {
                   setState(() {
@@ -156,6 +172,16 @@ class _RidesScreenState extends State<RidesScreen> {
                 },
                 decoration:
                     const InputDecoration(labelText: 'Enter Source City'),
+              ),
+              TextField(
+                controller: destinationController,
+                onChanged: (value) {
+                  setState(() {
+                    destinationText = value;
+                  });
+                },
+                decoration:
+                    const InputDecoration(labelText: 'Enter Destination City'),
               ),
             ],
           ),
@@ -176,24 +202,6 @@ class _RidesScreenState extends State<RidesScreen> {
           ],
         );
       },
-    );
-  }
-}
-
-class RideDetailPage extends StatelessWidget {
-  final int rideId;
-
-  const RideDetailPage({super.key, required this.rideId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ride Detail'),
-      ),
-      body: Center(
-        child: Text('Ride ID: $rideId'),
-      ),
     );
   }
 }

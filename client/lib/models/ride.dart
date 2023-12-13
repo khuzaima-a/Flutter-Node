@@ -70,4 +70,28 @@ List<Ride> rides = [
         image: "https://avatars.githubusercontent.com/u/107122634?v=4"),
     fare: 300,
   ),
+  Ride(
+    id: 3,
+    source: "Faisalabad",
+    destination: "Islamabad",
+    date: "2023/12/14",
+    departureTime: "16:00",
+    arrivalTime: "20:00",
+    vehicle:
+        Vehicle(name: "Audi ETron-GT", color: "White", type: "Car", seats: 3),
+    driver: Driver(id: 2, name: "Adeel", image: null),
+    fare: 2300,
+  ),
+  Ride(
+    id: 4,
+    source: "Lahore",
+    destination: "Karachi",
+    date: "2023/12/14",
+    departureTime: "04:00",
+    arrivalTime: "21:00",
+    vehicle:
+        Vehicle(name: "Suzuki Swift", color: "White", type: "Car", seats: 3),
+    driver: Driver(id: 2, name: "Moiz", image: null),
+    fare: 6700,
+  ),
 ];
