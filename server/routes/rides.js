@@ -7,4 +7,6 @@ router.get('/', RidesController.getRides);
 
 router.get('/:rideId', RidesController.getRideDetails)
 
+
+
 module.exports = router;
