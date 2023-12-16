@@ -26,7 +26,7 @@ class _RideDetailState extends State<RideDetail> {
 
   Future<void> fetchRide() async {
     final url = Uri.http(
-      'localhost:3000',
+      '192.168.129.187:3000',
       '/rides/$rideId',
     );
     final response = await http.get(url);
@@ -155,13 +155,6 @@ class _RideDetailState extends State<RideDetail> {
                   const Icon(Icons.person_2_rounded,
                       size: 36, color: Colors.blue),
                 ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                height: 1,
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(200, 187, 185, 185),
-                ),
               ),
               const SizedBox(height: 16),
               Container(

@@ -20,7 +20,7 @@ class _RidesScreenState extends State<RidesScreen> {
   bool isFetching = true;
 
   Future<void> fetchData() async {
-    final url = Uri.http('localhost:3000', '/rides');
+    final url = Uri.http('192.168.129.187:3000', '/rides');
 
     final response = await http.get(url);
 
@@ -225,13 +225,6 @@ class _RidesScreenState extends State<RidesScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  fetchData();
-                  Navigator.pop(context);
-                },
-                child: const Text('Fetch Data'),
-              ),
               TextField(
                 controller: sourceController,
                 onChanged: (value) {
