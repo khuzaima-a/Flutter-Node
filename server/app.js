@@ -17,7 +17,6 @@ app.use(express.json());
 
 app.use('/rides', RidesRoutes);
 
-
 mongoose
     .connect('mongodb://db:27017/flutter_db', {
         family: 4

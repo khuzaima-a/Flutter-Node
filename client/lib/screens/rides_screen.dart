@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:client/models/ride.dart";
 import "package:client/screens/ride_detail.dart";
+import "package:http/http.dart" as http;
+import "dart:convert";
 
 class RidesScreen extends StatefulWidget {
   const RidesScreen({super.key});
@@ -10,21 +12,65 @@ class RidesScreen extends StatefulWidget {
 
 class _RidesScreenState extends State<RidesScreen> {
   List<Ride> ridesToShow = [];
+  List<Ride> rides = [];
   final TextEditingController sourceController = TextEditingController();
   final TextEditingController destinationController = TextEditingController();
   String sourceText = '';
   String destinationText = '';
+  bool isFetching = true;
+
+  Future<void> fetchData() async {
+    final url = Uri.http('localhost:3000', '/rides');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData = json.decode(response.body);
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (responseData.containsKey('rides')) {
+        List<dynamic> ridesData = responseData['rides'];
+        List<Map<String, dynamic>> ridesMap =
+            List<Map<String, dynamic>>.from(ridesData);
+
+        List<Ride> ridesGet = ridesMap.map((rideMap) {
+          return Ride(
+            id: rideMap['_id'],
+            source: rideMap['source'],
+            destination: rideMap['destination'],
+            date: rideMap['date'],
+            departureTime: rideMap['departureTime'],
+            arrivalTime: rideMap['arrivalTime'],
+            driver: rideMap['driver'],
+            vehicleName: rideMap['vehicleName'],
+            vehicleColor: rideMap['vehicleColor'],
+            fare: rideMap['fare'].toDouble(),
+          );
+        }).toList();
+
+        setState(() {
+          ridesToShow = ridesGet;
+          rides = ridesGet;
+          isFetching = false;
+        });
+      } else {
+        throw Exception('Invalid response format');
+      }
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    ridesToShow = rides;
+    fetchData();
   }
 
   void filterRides() {
     setState(() {
       if (sourceText.isEmpty && destinationText.isEmpty) {
-        ridesToShow = rides; // No filter, show all rides
+        ridesToShow = rides;
       } else {
         ridesToShow = rides
             .where((ride) =>
@@ -56,101 +102,117 @@ class _RidesScreenState extends State<RidesScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: ridesToShow.length,
-        itemBuilder: (context, index) {
-          var ride = ridesToShow[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RideDetailPage(rideId: ride.id),
-                ),
-              );
-            },
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: const Color.fromARGB(255, 240, 238, 238),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 6,
-                    offset: const Offset(1, 3),
+      body: isFetching
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ridesToShow.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No Rides to show',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(4, 16, 12, 16),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.person_2_rounded,
-                            size: 44,
+                )
+              : ListView.builder(
+                  itemCount: ridesToShow.length,
+                  itemBuilder: (context, index) {
+                    var ride = ridesToShow[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RideDetail(rideId: ride.id),
                           ),
-                          Text(ride.driver.name)
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${ride.source}  -  ${ride.destination}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Text('${ride.departureTime} - ${ride.arrivalTime}'),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Row(
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: const Color.fromARGB(255, 240, 238, 238),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: const Offset(1, 3),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 16, 12, 16),
+                          child: Row(
                             children: [
-                              const Icon(Icons.directions_car),
-                              const SizedBox(
-                                width: 6,
+                              SizedBox(
+                                width: 80,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.person_2_rounded,
+                                      size: 44,
+                                    ),
+                                    Text(ride.driver)
+                                  ],
+                                ),
                               ),
-                              Text(ride.vehicle.name)
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${ride.source}  -  ${ride.destination}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    Text(
+                                        '${ride.departureTime} - ${ride.arrivalTime}'),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.directions_car),
+                                        const SizedBox(
+                                          width: 6,
+                                        ),
+                                        Text(ride.vehicleName)
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Flexible(
+                                flex: 0,
+                                child: SizedBox(
+                                  height: 75,
+                                  child: Text(
+                                    '${ride.fare.toInt()} PKR',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.red),
+                                  ),
+                                ),
+                              ),
                             ],
-                          )
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      flex: 0,
-                      child: SizedBox(
-                        height: 75,
-                        child: Text(
-                          '${ride.fare.toInt()} PKR',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Colors.red),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -163,6 +225,13 @@ class _RidesScreenState extends State<RidesScreen> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              ElevatedButton(
+                onPressed: () {
+                  fetchData();
+                  Navigator.pop(context);
+                },
+                child: const Text('Fetch Data'),
+              ),
               TextField(
                 controller: sourceController,
                 onChanged: (value) {
@@ -188,16 +257,16 @@ class _RidesScreenState extends State<RidesScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 filterRides();
-                Navigator.pop(context); // Close the dialog
+                Navigator.pop(context);
               },
-              child: const Text('Save'),
+              child: const Text('Search'),
             ),
           ],
         );

@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get('/', RidesController.getRides);
 
+router.get('/seed', RidesController.seedRides);
+
 router.get('/:rideId', RidesController.getRideDetails)
-
-
 
 module.exports = router;

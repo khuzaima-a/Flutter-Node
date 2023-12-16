@@ -1,43 +1,39 @@
 const mongoose = require('mongoose');
-const Vehicle = require('./vehicle');
 
 const Schema = mongoose.Schema;
 
 const rideSchema = new Schema({
     source: {
         type: String,
-        required: true
     },
     destination: {
         type: String,
-        required: true
     },
     date : {
-        type: Date,
-        required: true
+        type: String,
     },
     departureTime: {
         type: String,
-        required: true
+
     },
     arrivalTime: {
         type: String,
-        required: true
+
     },
 
-    vehicle: {
-        type: Schema.Types.ObjectId,
-        ref: 'Vehicle',
-        required: true
+    vehicleName: {
+        type: String,
+    },
+
+    vehicleColor: {
+        type: String
     },
    
     driver: {
         type: String,
-        required: true
     },
     fare: {
         type: Number,
-        required: true
     }
     });
 
