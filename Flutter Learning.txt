@@ -1,0 +1,10 @@
+-- Stateless Widgets
+-- Stateful Widgets
+-- Buttons (TextButton, ElevatedButton, OutlinedButton, FloatingActionButton)
+-- Navigation
+-- Widgets (Center, Container, Scaffold, Padding, SizedBox, Divider, Column, Row, GridView, ListView,
+		TextField, Text, Icon, Card, AlertDialog, Drawer)
+-- AppBar (Center, Title, Leading, Action)
+
+-- Stylings (Padding, Margin, GradiantBackground, Background, Foreground, FontSize, FontWieght, Alignents etc)
+-- Packages (http & dart:convert)

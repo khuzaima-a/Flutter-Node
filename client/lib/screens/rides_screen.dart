@@ -20,7 +20,7 @@ class _RidesScreenState extends State<RidesScreen> {
   bool isFetching = true;
 
   Future<void> fetchData() async {
-    final url = Uri.http('192.168.129.187:3000', '/rides');
+    final url = Uri.http('172.19.144.1:3000', '/rides');
 
     final response = await http.get(url);
 
@@ -29,9 +29,9 @@ class _RidesScreenState extends State<RidesScreen> {
       await Future.delayed(const Duration(seconds: 2));
 
       if (responseData.containsKey('rides')) {
-        List<dynamic> ridesData = responseData['rides'];
-        List<Map<String, dynamic>> ridesMap =
-            List<Map<String, dynamic>>.from(ridesData);
+        List<dynamic> ridesMap = responseData['rides'];
+        // List<Map<String, dynamic>> ridesMap =
+        //     List<Map<String, dynamic>>.from(ridesData);
 
         List<Ride> ridesGet = ridesMap.map((rideMap) {
           return Ride(

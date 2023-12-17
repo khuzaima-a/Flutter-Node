@@ -1,0 +1,51 @@
+Assignment: Flutter with Dockerized REST API Integration
+Objective:
+ 
+Develop a Flutter app that interacts with a custom-built RESTful API running within a Docker container to fetch and display data.
+Tasks:
+ 
+Set Up Project:
+Create a new Flutter project.
+Ensure the project runs successfully on Android/iOS.
+ 
+Design User Interface:
+Design a simple UI with two screens:
+Screen 1: Display a list of items fetched from your custom REST API.
+Screen 2: Show detailed information about a selected item.
+ 
+Create Dockerized REST API:
+Develop a simple REST API using a framework of your choice (Preferred - NodeJS or Java).
+Containerize the API using Docker.
+Define Dockerfile and docker-compose.yml for easy deployment.
+Seed the API with sample data.
+ 
+API Integration:
+Use the http package in Flutter to make requests to your Dockerized API.
+Fetch and display data in the Flutter app.
+ 
+Navigation:
+Implement navigation between the list and detail screens.
+ 
+Error Handling:
+Implement basic error handling for API calls.
+Display user-friendly error messages.
+ 
+Loading States:
+Add loading indicators during data fetching.
+ 
+Documentation:
+Provide brief documentation on key code sections.
+Include instructions on setting up and running both the Flutter app and the Dockerized API.
+ 
+Submission:
+ 
+Submit the compressed Flutter project.
+Include a README with setup instructions for both the Flutter app and the Dockerized API.
+ 
+Evaluation Criteria:
+ 
+Successful integration with a Dockerized custom-built REST API.
+Functional UI with proper navigation.
+Basic error handling and loading states.
+Effectiveness of the Dockerized API, including correct Dockerfile and docker-compose.yml setup.
+Code clarity and organization.

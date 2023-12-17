@@ -26,7 +26,7 @@ class _RideDetailState extends State<RideDetail> {
 
   Future<void> fetchRide() async {
     final url = Uri.http(
-      '192.168.129.187:3000',
+      '172.19.144.1:3000',
       '/rides/$rideId',
     );
     final response = await http.get(url);
@@ -35,9 +35,9 @@ class _RideDetailState extends State<RideDetail> {
       Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData.containsKey('ride')) {
-        dynamic ridesData = responseData['ride'];
+        dynamic _ride = responseData['ride'];
         // ignore: no_leading_underscores_for_local_identifiers
-        Map<String, dynamic> _ride = Map<String, dynamic>.from(ridesData);
+        // Map<String, dynamic> _ride = Map<String, dynamic>.from(ridesData);
 
         Ride fetchedRide = Ride(
           id: _ride['_id'],
